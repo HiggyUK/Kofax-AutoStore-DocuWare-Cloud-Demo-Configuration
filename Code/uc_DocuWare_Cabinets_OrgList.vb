@@ -22,6 +22,10 @@ Module Script
 		' Get the current user from the Client - assumes that the user has logged in via Card or PIN
 		eventData.Form.Fields.GetField("UserName").Value = eventData.User.UserName
 		
+		' Get the User Password if Stored
+		getStoredPassword(eventData)
+		
+		
 	End Sub
 
 	Sub Form_OnSubmit(ByVal eventData As MFPEventData)
@@ -73,7 +77,7 @@ Module Script
 		
 		
 			' Save the password to the password cache so it is remembered for next time.
-			savePassword = Tools.SavePassword(Tools.EncodeData(userPassword), userName,"C:\NetDocumentsDemo\Passwords")
+			savePassword = Tools.SavePassword(Tools.EncodeData(userPassword), userName,"C:\DocuWareCloudDemo\Passwords")
 			If savePassword <> "OK" Then
 				statusLabel.Text = savePassword
 				statusLabel.IsHidden = False
@@ -87,12 +91,18 @@ Module Script
 		
 		' Username has changed, so check if password is already cached
 		
+		getStoredPassword(eventData)
+			
+	End Sub
+		
+	Sub getStoredPassword(ByVal eventData As MFPEventData)
+	
 		Dim statusLabel As LabelField = eventData.Form.Fields.GetField("Status")
 		Dim userName As TextField = eventData.Form.Fields.GetField("UserName")
 		Dim userPassword As TextField = eventData.Form.Fields.GetField("Password")
 
 		Dim savePassword As String = ""
-		savePassword = Tools.GetPassword(userName.Value,"C:\NetDocumentsDemo\Passwords")
+		savePassword = Tools.GetPassword(userName.Value,"C:\DocuWareCloudDemo\Passwords")
 		If left(savePassword,5) = "ERROR" Then
 			statusLabel.Text = savePassword
 			statusLabel.IsHidden = False
@@ -104,7 +114,8 @@ Module Script
 			userPassword.Value = ""
 			statusLabel.IsHidden = True
 		End If
-		
+	
+	
 	End Sub
 		
 	Sub Org_OnChange(ByVal eventData As MFPEventData) 'TODO change <fieldName> to desired field name
